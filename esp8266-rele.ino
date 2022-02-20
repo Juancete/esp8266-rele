@@ -5,8 +5,7 @@
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-
-const byte rele = 3; // Pin with RELE
+const byte rele = 5; // Pin with RELE
 
 void initWifi()
 {
@@ -20,6 +19,9 @@ void initWifi()
   }
 
   Serial.println("Connected to the WiFi network");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP()); 
+  imprimirEstado();
   digitalWrite(LED_BUILTIN, LOW);
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
@@ -51,8 +53,8 @@ void configureWifi()
   WiFi.persistent(false);
   WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_STA);
-  WiFi.setSleepMode(WIFI_NONE_SLEEP)
-      wifi_set_sleep_type(NONE_SLEEP_T);
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
+  wifi_set_sleep_type(NONE_SLEEP_T);
 }
 
 void configureOutPuts()
@@ -104,22 +106,24 @@ void loop()
     {
       timer = NULL;
       turnOff();
-      verifyWifi();
       client.publish(topic, "0");
       client.publish(status, "0");
     }
   }
-  else
-  {
-    verifyWifi();
-  }
+  verifyWifi();
   client.loop();
 }
 
 void verifyWifi()
 {
-  if (WiFi.status() != WL_CONNECTED)
+  if (WiFi.status() != WL_CONNECTED || !client.connected())
   {
+    imprimirEstado();
     initWifi();
   }
+}
+
+void imprimirEstado(){
+  Serial.print("Estado: ");
+  Serial.println(WiFi.status());
 }
