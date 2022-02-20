@@ -6,6 +6,7 @@ const char* mqtt_server = "direccion del servidor mqtt";
 const char* mqttUser = "mqtt user";
 const char* mqttPassword = "Mqtt password";
 const char* topic = "/casa/planta_baja/riego";
+const char* status = "/casa/planta_baja/riego/status";
 unsigned long tiempoSegundos = 240;
 unsigned long timer;
 #endif

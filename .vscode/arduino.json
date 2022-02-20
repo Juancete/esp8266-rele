@@ -1,7 +1,7 @@
 {
-    "board": "esp8266:esp8266:nodemcuv2",
-    "configuration": "xtal=80,vt=flash,exception=disabled,eesz=4M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=9600",
-    "port": "/dev/ttyS0",
-    "sketch": "mqtt2.ino",
+    "board": "esp8266:esp8266:generic",
+    "configuration": "xtal=80,vt=flash,exception=legacy,ssl=all,ResetMethod=nodemcu,CrystalFreq=26,FlashFreq=40,FlashMode=dout,eesz=1M64,led=2,sdk=nonosdk_190703,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
+    "port": "/dev/ttyUSB0",
+    "sketch": "esp8266-rele.ino",
     "programmer": "AVRISP mkII"
 }
