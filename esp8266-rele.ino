@@ -7,7 +7,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 const byte rele = 5; // Pin with RELE
 
-void initWifi()
+void connectWifi()
 {
   WiFi.begin(ssid, password);
   WiFi.setOutputPower(20.5);
@@ -20,9 +20,12 @@ void initWifi()
 
   Serial.println("Connected to the WiFi network");
   Serial.println("IP address: ");
-  Serial.println(WiFi.localIP()); 
+  Serial.println(WiFi.localIP());
   imprimirEstado();
   digitalWrite(LED_BUILTIN, LOW);
+}
+void connectMQTT()
+{
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
@@ -45,7 +48,6 @@ void initWifi()
   }
   client.subscribe(topic);
 }
-
 void configureWifi()
 {
   wifi_set_phy_mode(PHY_MODE_11B);
@@ -69,7 +71,8 @@ void setup()
   configureOutPuts();
   Serial.begin(115200);
   configureWifi();
-  initWifi();
+  connectWifi();
+  connectMQTT();
 }
 
 void callback(char *topic, byte *payload, unsigned int length)
@@ -96,6 +99,8 @@ void turnOff()
   Serial.println("Salida en HIGH");
   timer = NULL;
   digitalWrite(rele, HIGH);
+  client.publish(topic, "0");
+  client.publish(status, "0");
 }
 
 void loop()
@@ -106,8 +111,6 @@ void loop()
     {
       timer = NULL;
       turnOff();
-      client.publish(topic, "0");
-      client.publish(status, "0");
     }
   }
   verifyWifi();
@@ -116,14 +119,19 @@ void loop()
 
 void verifyWifi()
 {
-  if (WiFi.status() != WL_CONNECTED || !client.connected())
+  if (WiFi.status() != WL_CONNECTED)
   {
     imprimirEstado();
-    initWifi();
+    turnOff();
+    connectWifi();
+  }
+  if (!client.connected()){
+    connectMQTT();
   }
 }
 
-void imprimirEstado(){
+void imprimirEstado()
+{
   Serial.print("Estado: ");
   Serial.println(WiFi.status());
 }
